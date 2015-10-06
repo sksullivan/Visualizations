@@ -3,7 +3,7 @@
 
 int main () {
 	Renderer mainRenderer;
-	mainRenderer.begin();
+	mainRenderer.begin(400,400);
 
 	return 0;
 }

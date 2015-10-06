@@ -1,5 +1,6 @@
 #include "renderer.h"
 
+
 Renderer::Renderer() {
 
 }
@@ -8,13 +9,12 @@ char* Renderer::loadShader (std::string filename) {
 	std::ifstream in(filename);
 	std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 	in.close();
-  // cout << contents;
 	char* ret = (char*)malloc(sizeof(char)*contents.length());
 	strcpy(ret,contents.c_str());
 	return ret;
 }
 
-GLFWwindow* Renderer::setupWindow() {
+GLFWwindow* Renderer::setupWindow(int width, int height) {
   // start GL context and O/S window using the GLFW helper library
 	if (!glfwInit ()) {
 		fprintf (stderr, "ERROR: could not start GLFW3\n");
@@ -27,7 +27,7 @@ GLFWwindow* Renderer::setupWindow() {
 	glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(640, 480, "Hello Triangle", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "Hello Triangle", NULL, NULL);
 	if (!window) {
 		fprintf (stderr, "ERROR: could not open window with GLFW3\n");
 		glfwTerminate();
@@ -53,30 +53,16 @@ void Renderer::setupRenderer() {
   glDepthFunc (GL_LESS); // depth-testing interprets a smaller value as "closer"
 }
 
-GLuint Renderer::setupGeometry() {
-	float points[] = {
-		0.0f,  0.5f,  0.0f,
-		0.5f, -0.5f,  0.0f,
-		-0.5f, -0.5f,  0.0f
-	};
-
-	GLuint vbo = 0;
-	glGenBuffers (1, &vbo);
-	glBindBuffer (GL_ARRAY_BUFFER, vbo);
-	glBufferData (GL_ARRAY_BUFFER, 9 * sizeof (float), points, GL_STATIC_DRAW);
-
-	GLuint vao = 0;
-	glGenVertexArrays (1, &vao);
-	glBindVertexArray (vao);
-	glEnableVertexAttribArray (0);
-	glBindBuffer (GL_ARRAY_BUFFER, vbo);
-	glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-	return vao;
+void Renderer::setupGeometry() { 
+    CObjModel* model = new CObjModel();
+    models.push_back(model);
+	model->loadModel("models/cube_2.obj");
+	model->bufferDataToGPU();
 }
 
 GLint Renderer::setupShaders() {
-	char* vertex_shader = loadShader("vert.glsl");
-	char* fragment_shader = loadShader("frag.glsl");
+	char* vertex_shader = loadShader("shaders/vert.glsl");
+	char* fragment_shader = loadShader("shaders/frag.glsl");
 
 	GLuint vs = glCreateShader (GL_VERTEX_SHADER);
 	glShaderSource (vs, 1, &vertex_shader, NULL);
@@ -129,24 +115,34 @@ GLint Renderer::setupShaders() {
 		delete infoLog;
 		return -1;
 	}
+    
+    uniforms.transform = glGetUniformLocation(shader_programme, "transform");
 
 	free(vertex_shader);
 	free(fragment_shader);
 	return shader_programme;
 }
 
-void Renderer::runMainLoop(GLFWwindow* window, GLint shaderProgram, GLuint vao) {
+void Renderer::populateUniforms(GLuint program) {
+//    glm::mat4 projection = glm::perspective(35.0f, 1.0f, 0.1f, 100.0f);
+    glm::mat4 transform = glm::mat4(1.);
+    glm::rotate(transform, 45.0f, glm::vec3(1.0f,0.0f,0.0f));
+    glUniformMatrix4fv(uniforms.transform, 1, GL_FALSE, glm::value_ptr(transform));
+}
+
+void Renderer::runMainLoop(GLFWwindow* window, GLint shaderProgram) {
 	while (!glfwWindowShouldClose (window)) {
 		// wipe the drawing surface clear
-		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram (shaderProgram);
-		glBindVertexArray (vao);
-		// draw points 0-3 from the currently bound VAO with current in-use shader
-		glDrawArrays (GL_TRIANGLES, 0, 3);
+        populateUniforms(shaderProgram);
+        for (int i = 0; i < models.size(); i++) {
+            models[i]->render();
+        }
 		// update other events like input handling 
-		glfwPollEvents ();
+		glfwPollEvents();
 		// put the stuff we've been drawing onto the display
-		glfwSwapBuffers (window);
+		glfwSwapBuffers(window);
 	}
 }
 
@@ -155,25 +151,21 @@ void Renderer::terminate() {
 	glfwTerminate();
 }
 
-int Renderer::begin () {
-	_window = setupWindow();
+int Renderer::begin (int width, int height) {
+	_window = setupWindow(width,height);
 	if (!_window) {
 		std::cout << "Falied to initialize glfw window." << std::endl;
 		return 1;
 	}
 	setupRenderer();
-	_vao = setupGeometry();
-	if (!_vao) {
-		std::cout << "Falied to initialize gemoetry." << std::endl;
-		return 1;
-	}
+	setupGeometry();
 	_shaderProgram = setupShaders();
 	if (!_shaderProgram) {
 		std::cout << "Falied to initialize shaders." << std::endl;
 		return 1;
 	}
 	std::cout << "Started visualization." << std::endl;
-	runMainLoop(_window, _shaderProgram, _vao);
+	runMainLoop(_window, _shaderProgram);
 	terminate();
 	return 0;
 }

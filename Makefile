@@ -4,4 +4,4 @@ EXENAME=run
 DEBUG=-g
 
 all:
-	g++ *.cpp $(DEBUG) -o $(EXENAME) $(LLDEPS) $(HLDEPS)
+	g++ *.cpp lib/*.cpp $(DEBUG) -o $(EXENAME) $(LLDEPS) $(HLDEPS)
