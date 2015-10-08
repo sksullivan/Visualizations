@@ -1,9 +1,12 @@
+#ifndef GEOMETRY_H
+#define GEOMETRY_H
+
 #include "../common.h"
 #include "glm/ext.hpp"
 
 /********************************
 
-Class:	CObjModel
+Class:	Geometry
 
 Purpose: Class for handling obj
 		 model files.
@@ -11,17 +14,18 @@ Purpose: Class for handling obj
 ********************************/
 using namespace std;
 
-class CObjModel
+class Geometry
 {
 public:
-	bool loadModel(std::string);
+	bool loadData(std::string);
 	void bufferDataToGPU();
-	void releaseModel();
+	void releaseData();
 	void printData();
 	int getPolygonCount();
 	void render();
 
-	CObjModel();
+	Geometry();
+    
 private:
 	bool bLoaded;
 	int iAttrBitField;
@@ -35,3 +39,5 @@ private:
 	GLuint vbo;
 	GLuint vao;
 };
+
+#endif

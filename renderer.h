@@ -1,28 +1,34 @@
-#include "lib/objModel.h" 
+#include "lib/geometry.h"
+#include "lib/RenderObject.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "common.h"
+#include "lib/utils.h"
 
 
 class Renderer {
 private:
 	GLFWwindow* setupWindow(int width, int height);
 	void setupRenderer();
-	void setupGeometry();
 	GLint setupShaders();
 	void runMainLoop(GLFWwindow*, GLint);
 	void terminate();
-	char* loadShader(std::string);
-    void populateUniforms(GLuint shaderProgram);
+    void populateUniforms(GLuint shader_program);
+    int setupGL();
 
 	GLFWwindow* _window;
 	GLint _shaderProgram;
 	GLuint _vao;
+    float elapsedSteps;
     
-    std::vector<CObjModel*> models;
+    std::vector<RenderObject*> objects;
+    std::string vertexShaderPath, fragmentShaderPath;
 public:
-	Renderer();
-	int begin(int width, int height);
+	Renderer(int width, int height);
+    void addRenderObject(RenderObject* renderObject);
+    void setShaders(std::string vertPath, std::string fragPath);
+	int begin();
+    
     
     struct {
         GLuint transform;

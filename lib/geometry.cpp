@@ -1,7 +1,7 @@
-#include "objModel.h"
+#include "geometry.h"
 
 
-CObjModel::CObjModel()
+Geometry::Geometry()
 {
 	bLoaded = false;
 	iAttrBitField = 0;
@@ -49,7 +49,7 @@ Result:  Loads obj model.
 
 ---------------------------------------------*/
 
-bool CObjModel::loadModel(string sFileName)
+bool Geometry::loadData(string sFileName)
 {
 	FILE* fp = fopen(sFileName.c_str(), "rt");
 
@@ -185,38 +185,85 @@ Result:  Frees all used resources by model.
 
 ---------------------------------------------*/
 
-void CObjModel::releaseModel()
+void Geometry::releaseData()
 {
 	if(!bLoaded)return;
 	glDeleteVertexArrays(1, &vao);
 	bLoaded = false;
 }
 
-int CObjModel::getPolygonCount()
+int Geometry::getPolygonCount()
 {
 	return iNumFaces;
 }
 
-void CObjModel::bufferDataToGPU() {
+void Geometry::bufferDataToGPU() {
     cout << "Buffering " << fVertices.size()*3*sizeof(float) << " bytes of data." << endl;
     cout << "Buffering " << iNumFaces << " faces." << endl;
     
+    float colors[] = {
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f
+    };
+    GLuint color_vbo = 0;
+    glGenBuffers(1, &color_vbo);
+    
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, fVertices.size()*3*sizeof(float), &fVertices[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
+    glBufferData(GL_ARRAY_BUFFER, fVertices.size()*3*sizeof(float), colors, GL_STATIC_DRAW);
+
     glBindVertexArray(vao);
-    glEnableVertexAttribArray (0);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 }
 
-void CObjModel::printData() {
+void Geometry::printData() {
 	for (int i = 0; i < fVertices.size(); i++) {
 		cout << glm::to_string(fVertices[i]) << " ";
 	}
 	cout << endl;
 }
 
-void CObjModel::render() {
+void Geometry::render() {
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, iNumFaces*3);
 }
