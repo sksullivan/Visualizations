@@ -1,0 +1,11 @@
+# Blender v2.76 (sub 0) OBJ File: 'card.blend'
+# www.blender.org
+mtllib Plane.010.mtl
+o Plane.010
+v 1.210024 1.518263 0.059210
+v 0.085023 1.518263 0.059210
+v 0.085023 -0.231737 0.059210
+vn 0.000000 0.000000 1.000000
+usemtl None
+s off
+f 2//1 3//1 1//1

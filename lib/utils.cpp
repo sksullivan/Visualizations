@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <algorithm>
 
 char* loadShader (std::string filename) {
     std::ifstream in(filename);
@@ -35,4 +36,8 @@ std::tuple<float,float,float> rainbowColorForTime(int elapsedSteps) {
     }
 //    std::cout << r/255.0 << "," <<  g/255.0 << "," << b/255.0 << std::endl;
     return std::make_tuple(r/255.0,g/255.0,b/255.0);
+}
+
+float periodicOffset(int step, float mag) {
+    return mag*std::max(sinf((float)step/30.0f)-0.3,0.0);
 }

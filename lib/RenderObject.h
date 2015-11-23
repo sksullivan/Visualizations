@@ -1,5 +1,5 @@
-#include "../common.h"
-#include "geometry.h"
+#import "../common.h"
+#import "geometry.h"
 
 class RenderObject {
 public:

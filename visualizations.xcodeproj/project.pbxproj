@@ -73,7 +73,7 @@
 		AA1B5D121BC2ED920048B882 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0710;
 				TargetAttributes = {
 					AAC00BA21BC2EE46009D05F0 = {
 						CreatedOnToolsVersion = 7.0.1;
@@ -101,7 +101,9 @@
 		AA1B5D161BC2ED920048B882 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_TESTABILITY = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.10.5;
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};

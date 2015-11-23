@@ -10,6 +10,54 @@ Geometry::Geometry()
     glGenBuffers(1, &vbo);
     vao = 0;
     glGenVertexArrays(1, &vao);
+    
+//    colorData = vector<float>{
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f,
+//        1.0f, 0.0f, 0.0f,
+//        0.0f, 1.0f, 0.0f,
+//        0.0f, 0.0f, 1.0f
+//    };
+    
+    std::vector<float> colors(12*3*3,1.0f);
+    for (int i = 0; i < colors.size()/3; i++) {
+        float iterProg = i/(colors.size()/3.0f);
+        colors[3*i] = 1.0f*iterProg;
+        colors[3*i+1] = 0.5f*iterProg;
+        colors[3*i+2] = 0.0f*iterProg;
+    }
+    setColorData(colors);
 }
 
 /*-----------------------------------------------
@@ -52,6 +100,10 @@ Result:  Loads obj model.
 bool Geometry::loadData(string sFileName)
 {
 	FILE* fp = fopen(sFileName.c_str(), "rt");
+    if (fp == NULL) {
+        std::cout << "ERROR: Couldn't load geometry." << std::endl;
+        return false;
+    }
 
 	if(fp == NULL)return false;
 
@@ -197,55 +249,20 @@ int Geometry::getPolygonCount()
 	return iNumFaces;
 }
 
+void Geometry::setColorData(vector<float> colorData) {
+    this->colorData = colorData;
+}
+
 void Geometry::bufferDataToGPU() {
     cout << "Buffering " << fVertices.size()*3*sizeof(float) << " bytes of data." << endl;
     cout << "Buffering " << iNumFaces << " faces." << endl;
-    
-    float colors[] = {
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f
-    };
     GLuint color_vbo = 0;
     glGenBuffers(1, &color_vbo);
     
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, fVertices.size()*3*sizeof(float), &fVertices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
-    glBufferData(GL_ARRAY_BUFFER, fVertices.size()*3*sizeof(float), colors, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, fVertices.size()*3*sizeof(float), &colorData.front(), GL_STATIC_DRAW);
 
     glBindVertexArray(vao);
     glEnableVertexAttribArray(0);

@@ -1,7 +1,7 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
-#include "../common.h"
+#import "../common.h"
 #include "glm/ext.hpp"
 
 /********************************
@@ -23,6 +23,7 @@ public:
 	void printData();
 	int getPolygonCount();
 	void render();
+    void setColorData(vector<float> colorData);
 
 	Geometry();
     
@@ -30,7 +31,8 @@ private:
 	bool bLoaded;
 	int iAttrBitField;
 	int iNumFaces;
-	
+    
+    vector<float> colorData;
 	vector<glm::vec3> vVertices;
 	vector<glm::vec2> vTexCoords;
 	vector<glm::vec3> vNormals;
