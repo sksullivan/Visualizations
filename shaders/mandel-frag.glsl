@@ -55,12 +55,17 @@ void main(void) {
         // (x + yi) ^ 2 = x ^ 2 - y ^ 2 + 2xyi
         
         // TRADITIONAL MANDEL OR JULIA
-        z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y);
-        z += c;
+//        z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y);
+//        z += c;
         
-        // JULIA VARIATION
+        // JULIA VARIATION - Experiment
 //        z = vec2(z.x * z.x * z.x - 3.0 * z.x * z.y * z.y, 3 * z.x * z.x * z.y - z.y * z.y * z.y);
 //        z = vec2(z.x-1,z.y);
+        
+        // JV - Delicate snakes
+        c = vec2(-0.835,-0.2321);
+        z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y);
+        z += c;
         
         if (dot(z,z) > 4.0) { // dot(z,z) == length(z) ^ 2 only faster to compute
             break;
@@ -70,11 +75,17 @@ void main(void) {
     }
     
     if (it < float(iterations)) {
+        // Regular coloring
         color.x = sin(it / 3.0);
         color.y = cos(it / 6.0);
         color.z = cos(it / 12.0 + 3.14 / 4.0);
+        
+        // Rapid shifts coloring
+//        color.x = sin(it);
+//        color.y = sin(1.0+it);
+//        color.z = sin(2.0+it);
     }
-//    color.x = it/float(iterations);
+    
     
     FragColor = vec4(color,1.0);
 }
